@@ -1,0 +1,10 @@
+*.jpg
+*.png
+__pycache__
+.idea
+*.dat
+store
+storage/data/boss
+storage/shotcut
+data
+
