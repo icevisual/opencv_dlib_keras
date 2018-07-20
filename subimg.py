@@ -1,11 +1,9 @@
 import cv2
 import sys
 import os
+import re
 
-
-print(list(bytes.fromhex("FF0C64B6")))
-
-if __name__ == '__main__1':
+if __name__ == '__main__':
   # filename x y with height distname
   if len(sys.argv) >= 7:
     filename, x, y, w, h, distname = sys.argv[1:7]
@@ -16,6 +14,12 @@ if __name__ == '__main__1':
     transparency = False
     if len(sys.argv) >= 8:
       transparency = True
+      transparency_color = sys.argv[7]
+      if re.match(r"[a-fA-F0-9]{8}", transparency_color):
+        transparency_color_list = list(bytes.fromhex(transparency_color))
+        transparency_color_list.reverse()
+      else:
+        transparency_color_list = [255, 255, 255, 255] 
     if os.path.isfile(filename):
       frame = cv2.imread(filename, -1)
       # print(len(frame))
@@ -25,13 +29,13 @@ if __name__ == '__main__1':
       if transparency:
         for i in range(0, len(image)):
           for j in range(0, len(image[i])):
-            if image[i][j][0] == 255 \
-              and image[i][j][1] == 255 \
-              and image[i][j][2] == 255 \
-              and image[i][j][3] == 255:
+            if image[i][j][0] == transparency_color_list[0] \
+              and image[i][j][1] == transparency_color_list[1] \
+              and image[i][j][2] == transparency_color_list[2] \
+              and image[i][j][3] == transparency_color_list[3]:
               image[i][j] = [0 ,0, 0, 0]
-            print("[%d, %d]" % (i, j) , image[i][j])
-          break
+            # print("[%d, %d]" % (i, j) , image[i][j])
+          # break
       cv2.imwrite(distname, image)
       # cv2.imshow("Result",frame)
       # FF 0C 64 B6
