@@ -7,7 +7,6 @@ import hmac
 import base64
 import re
 import sys
-import cv2
 from hashlib import sha1
 from datetime import datetime
 from subprocess import Popen, PIPE

@@ -3,6 +3,9 @@ import win32con
 import ctypes
 import ctypes.wintypes
 import threading
+import time
+from icevisual.Utils import Utils
+
 
 RUN = False  # 用来传递运行一次的参数
 EXIT = False  # 用来传递退出的参数
@@ -11,7 +14,11 @@ id1 = 105  # 注册热键的唯一id，用来区分热键
 id2 = 106
 
 
-class Hotkey(threading.Thread):  # 创建一个Thread.threading的扩展类
+class HotkeyThread(threading.Thread):  # 创建一个Thread.threading的扩展类
+
+    def run_id1(self):
+        time.sleep(1)
+        print(Utils.format_time_with_millisecond(),"Run ID1")
 
     def run(self):
         global EXIT  # 定义全局变量，这个可以在不同线程间共用。
@@ -28,12 +35,12 @@ class Hotkey(threading.Thread):  # 创建一个Thread.threading的扩展类
         # 以下为检测热键是否被按下，并在最后释放快捷键
         try:
             msg = ctypes.wintypes.MSG()
-
             while True:
                 if user32.GetMessageA(ctypes.byref(msg), None, 0, 0) != 0:
                     if msg.message == win32con.WM_HOTKEY:
                         if msg.wParam == id1:
                             RUN = True
+                            self.run_id1()
                         elif msg.wParam == id2:
                             EXIT = True
                             return
@@ -46,13 +53,13 @@ class Hotkey(threading.Thread):  # 创建一个Thread.threading的扩展类
             user32.UnregisterHotKey(None, id2)
 
 
-hotkey = Hotkey()
+hotkey = HotkeyThread()
 hotkey.start()
 
 while True:
-
     if RUN:
         # 这里放你要用热键启动执行的代码
+        print("RUNNING")
         RUN = False
 
     elif EXIT:
