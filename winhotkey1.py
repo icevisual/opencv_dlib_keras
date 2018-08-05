@@ -4,8 +4,11 @@ import ctypes
 import ctypes.wintypes
 import threading
 import time
+import os
+from winapi import window_capture
+from other.cv2_t2 import get_can_cant_use
+from other.cv2_t3 import read_img_p_count
 from icevisual.Utils import Utils
-
 
 RUN = False  # 用来传递运行一次的参数
 EXIT = False  # 用来传递退出的参数
@@ -17,8 +20,22 @@ id2 = 106
 class HotkeyThread(threading.Thread):  # 创建一个Thread.threading的扩展类
 
     def run_id1(self):
-        time.sleep(1)
-        print(Utils.format_time_with_millisecond(),"Run ID1")
+        filename = "storage/ScreenShot/%d.jpg" % time.time();
+        window_capture(filename)
+        get_can_cant_use(filename, 'storage/ScreenShot/UseDisableEnable.jpg')
+        os.unlink(filename)
+
+        '''
+w = 1600 h=900
+Counr =  1842   enable
+2018-08-05 23:27:00.050 Run ID1
+RUNNING
+w = 1600 h=900
+Counr =  3284   disable
+2018-08-05 23:27:16.142 Run ID1'''
+
+        read_img_p_count('storage/ScreenShot/UseDisableEnable.jpg')
+        print(Utils.format_time_with_millisecond(), "Run ID1")
 
     def run(self):
         global EXIT  # 定义全局变量，这个可以在不同线程间共用。
