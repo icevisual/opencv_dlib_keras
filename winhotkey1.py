@@ -1,10 +1,13 @@
 # _*_ coding:UTF-8 _*_  
 import win32con
+import win32api
+import random
 import ctypes
 import ctypes.wintypes
 import threading
 import time
 import os
+import sys
 from winapi import window_capture
 from other.cv2_t2 import get_can_cant_use
 from other.cv2_t3 import read_img_p_count
@@ -18,6 +21,36 @@ id2 = 106
 
 
 class HotkeyThread(threading.Thread):  # 创建一个Thread.threading的扩展类
+
+    def RunSomething(self, trytime):
+        VK_E = 0x45
+        VK_R = 0x52
+        VK_ESCAPE = win32con.VK_ESCAPE
+        VK_UP = win32con.VK_UP
+        VK_RIGHT = win32con.VK_RIGHT
+        DefaultSleep = 100
+        vks = [VK_ESCAPE, 0xff + 200, VK_E, 0xff + DefaultSleep, VK_UP, 0xff + DefaultSleep, VK_E, 0xff + DefaultSleep, \
+               VK_E, 0xff, VK_ESCAPE, 0xff + DefaultSleep, VK_RIGHT,
+               0xff + DefaultSleep, VK_E, 0xff + 200, VK_E, 0xff + 200, VK_E, 0xff + 300, VK_E, 0xff + 300, VK_E,
+               0xff + 300, VK_E, 0xff + 300, VK_E, 0xff + 300, VK_E, ]
+
+        for j in range(0, trytime):
+            for i in range(0, len(vks)):
+                if vks[i] == 0xff:
+                    r = random.randint(28.32)
+                    print("Sleep %d" % r)
+                    time.sleep(r / 1000.0)
+                elif vks[i] < 0xff:
+                    win32api.keybd_event(vks[i], 0, 0, 0)
+                    win32api.keybd_event(vks[i], 0, win32con.KEYEVENTF_KEYUP, 0)
+                else:
+                    time.sleep((vks[i] - 0xff) / 1000.0)
+            if j < trytime - 1:
+                time.sleep(5)
+
+    def RunMain(self):
+        
+        pass
 
     def run_id1(self):
         filename = "storage/ScreenShot/%d.jpg" % time.time();
@@ -70,15 +103,23 @@ Counr =  3284   disable
             user32.UnregisterHotKey(None, id2)
 
 
-hotkey = HotkeyThread()
-hotkey.start()
+if __name__ == "__main__":
+    print(time.time())
+    r = random.randint(28, 32)
+    print(r)
+    time.sleep(r / 1000.0)
+    print(time.time())
 
-while True:
-    if RUN:
-        # 这里放你要用热键启动执行的代码
-        print("RUNNING")
-        RUN = False
+    sys.exit();
+    hotkey = HotkeyThread()
+    hotkey.start()
 
-    elif EXIT:
-        # 这里是用于退出循环的
-        break
+    while True:
+        if RUN:
+            # 这里放你要用热键启动执行的代码
+            print("RUNNING")
+            RUN = False
+
+        elif EXIT:
+            # 这里是用于退出循环的
+            break
