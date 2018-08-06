@@ -1,21 +1,6 @@
 import pymysql
-
- 
-def trans_dict_to_xml(data):
-  """
-  将 dict 对象转换成微信支付交互所需的 XML 格式数据
- 
-  :param data: dict 对象
-  :return: xml 格式数据
-  """
- 
-  xml = []
-  for k in sorted(data.keys()):
-    v = data.get(k)
-    if k == 'detail' and not v.startswith('<![CDATA['):
-      v = '<![CDATA[{}]]>'.format(v)
-    xml.append('<{key}>{value}</{key}>'.format(key=k, value=v))
-  return '<xml>{}</xml>'.format(''.join(xml))
+import sys
+from collections import OrderedDict
 
 if __name__ == '__main__':
   conn = pymysql.Connect(host='127.0.0.1',port=3306,user='root',passwd='',db='admin',charset='utf8')
@@ -30,12 +15,10 @@ FROM
 WHERE
   type > 0
 AND type < 3
-ORDER BY type ASC"""
+ORDER BY type ASC,cid ASC"""
   cursor.execute(sql)
   print("cursor.excute:",cursor.rowcount)
-  XMLDict = {
-
-  }
+  XMLDict = OrderedDict()
   datas = cursor.fetchall()
   for line in datas:
     if line[2] == 1:
@@ -52,8 +35,10 @@ ORDER BY type ASC"""
     child_str = "";
     for city in XMLDict[province]["Child"]:
       child_str = "%s<City Name='%s'/>" % (child_str,city["Name"]) 
-    result_str = "%s<Province Name='%s'>%s</Province>" % (result_str, XMLDict[province]["Name"],child_str) 
-    print(result_str)
+    if len(XMLDict[province]["Child"]) == 0:
+      result_str = "%s<Province Name='%s'><City Name='%s'/></Province>" % (result_str, XMLDict[province]["Name"], XMLDict[province]["Name"]) 
+    else:
+      result_str = "%s<Province Name='%s'>%s</Province>" % (result_str, XMLDict[province]["Name"],child_str) 
   f = open("res.txt", 'w')
   f.write(result_str)
   f.close()
