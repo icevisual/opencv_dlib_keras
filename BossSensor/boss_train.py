@@ -45,11 +45,11 @@ class Dataset(object):
             X_test = X_test.reshape(X_test.shape[0], img_rows, img_cols, 3)
             input_shape = (img_rows, img_cols, 3)
 
-        # the data, shuffled and split between train and test sets
+        # the data, shuffled and split between train and other sets
         print('X_train shape:', X_train.shape)
         print(X_train.shape[0], 'train samples')
         print(X_valid.shape[0], 'valid samples')
-        print(X_test.shape[0], 'test samples')
+        print(X_test.shape[0], 'other samples')
 
         # convert class vectors to binary class matrices
         Y_train = np_utils.to_categorical(y_train, nb_classes)
